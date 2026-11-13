@@ -145,10 +145,11 @@ body {
     place-items: center;
     overflow: hidden;
     background: #10251a;
+    color: #fff;
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 1450ms ease-in-out, visibility 0s linear 1450ms;
+    transition: opacity 1650ms ease-in-out, visibility 0s linear 1650ms;
   }
 
   .is-loading .loading-screen {
@@ -157,36 +158,63 @@ body {
     transition: none;
   }
 
+  .is-landed .loading-screen {
+    animation: leaf-tint 1450ms ease-in-out both;
+  }
+
+  .loading-drift {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 1px;
+    height: 1px;
+    transition: opacity 900ms ease-in-out;
+  }
+
   .loading-light {
-    width: 9px;
+    --halo-mask: radial-gradient(circle closest-side,
+      #000 3px,
+      rgb(0 0 0 / 89%) 5px,
+      rgb(0 0 0 / 30%) 15%,
+      rgb(0 0 0 / 11%) 42%,
+      rgb(0 0 0 / 3%) 68%,
+      transparent);
+    position: absolute;
+    width: clamp(145px, 43vw, 210px);
     aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--content-color);
-    box-shadow: 0 0 12px 3px #d2ff7b9e, 0 0 34px 10px #d2ff7b2e;
-    opacity: 0.55;
-    transform: scale(0.8);
+    background: currentColor;
+    -webkit-mask-image: var(--halo-mask);
+    mask-image: var(--halo-mask);
+    opacity: 0.67;
+    transform: scale(0.92);
+  }
+
+  .is-loading .loading-drift {
+    --drift-time: 3650ms;
+    animation:
+      feather-fall var(--drift-time) cubic-bezier(0.36, 0.18, 0.3, 1) both,
+      feather-sway var(--drift-time) ease-in-out both;
   }
 
   .is-loading .loading-light {
-    animation: breathe 2100ms ease-in-out infinite;
+    animation: breathe 2800ms ease-in-out infinite;
   }
 
   .loading-bloom {
     position: absolute;
     width: 170vmax;
     aspect-ratio: 1;
-    background: radial-gradient(circle closest-side, var(--content-color) 86%, transparent 100%);
+    background: radial-gradient(circle closest-side, currentColor 86%, transparent 100%);
     transform: scale(0);
   }
 
   .is-expanding .loading-bloom {
-    animation: bloom 1450ms cubic-bezier(0.63, 0, 0.25, 1) both;
+    animation: bloom 1700ms cubic-bezier(0.53, 0.05, 0.27, 1) both;
   }
 
-  .is-expanding .loading-light {
-    animation: none;
+  .is-expanding .loading-drift {
     opacity: 0;
-    transition: opacity 200ms ease-out;
+    transition-delay: 180ms;
   }
 
   .waiting-image {
@@ -234,13 +262,32 @@ body {
 }
 
 @keyframes breathe {
-  32% { opacity: 1; transform: scale(1.26); }
+  50% { opacity: 1; transform: scale(1.14); }
+}
+
+@keyframes feather-fall {
+  from { transform: translateY(-52vh); }
+  to { transform: translateY(0); }
+}
+
+@keyframes feather-sway {
+  0% { translate: calc(-10vw * var(--drift-bias)) 0; }
+  24% { translate: calc(15vw * var(--drift-bias)) 0; }
+  51% { translate: calc(-13vw * var(--drift-bias)) 0; }
+  76% { translate: calc(7vw * var(--drift-bias)) 0; }
+  100% { translate: 0 0; }
+}
+
+@keyframes leaf-tint {
+  from { color: #fff; }
+  to { color: var(--content-color); }
 }
 
 /* The opaque part covers all four corners, including on square viewports. */
 @keyframes bloom {
-  from { transform: scale(0.006); }
-  to { transform: scale(1); }
+  from { opacity: 0; transform: scale(0.006); }
+  48% { opacity: 1; }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes image-arrival {

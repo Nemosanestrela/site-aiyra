@@ -9,19 +9,21 @@
   <script>
     if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
       const root = document.documentElement;
+      const driftStrength = 0.8 + Math.random() * 0.4;
+      root.style.setProperty('--drift-bias', Math.random() < 0.5 ? driftStrength : -driftStrength);
       root.classList.add('is-loading');
       setTimeout(() => {
-        if (!root.classList.contains('is-expanding')) root.classList.remove('is-loading');
+        if (!root.classList.contains('is-expanding')) root.classList.remove('is-loading', 'is-landed');
       }, 20000);
     }
   </script>
-  <link rel="stylesheet" href="style.css?v=3">
-  <script src="animation.js?v=3" defer></script>
+  <link rel="stylesheet" href="style.css?v=5">
+  <script src="animation.js?v=5" defer></script>
 </head>
 <body>
   <div class="loading-screen" aria-hidden="true">
     <span class="loading-bloom"></span>
-    <span class="loading-light"></span>
+    <span class="loading-drift"><span class="loading-light"></span></span>
   </div>
   <div class="page">
     <main>
