@@ -59,8 +59,30 @@ function revealImage(image, revealSeparately) {
       image.classList.add('arriving-image');
     }
     image.classList.remove('waiting-image');
-
   }, () => {});
+}
+
+function wait(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+async function revealForest(imagesReady) {
+  await Promise.all([wait(1450), imagesReady.then(() => wait(700))]);
+  if (!root.classList.contains('is-loading') || !motionPreference.matches) {
+    root.classList.remove('is-loading');
+    return;
+  }
+
+  const cover = document.querySelector('.loading-screen');
+  root.classList.add('is-expanding');
+  const [expansion] = cover.querySelector('.loading-bloom').getAnimations();
+  if (expansion) await Promise.allSettled([expansion.finished]);
+  await wait(170);
+
+  render();
+  root.classList.remove('is-loading');
+  await Promise.allSettled(cover.getAnimations().map((transition) => transition.finished));
+  root.classList.remove('is-expanding');
 }
 
 root.classList.add('has-motion');
@@ -73,11 +95,7 @@ motionPreference.addEventListener('change', scheduleRender);
 
 if (root.classList.contains('is-loading')) {
   const artwork = [...scene.querySelectorAll('img')];
-  const firstBreath = new Promise((resolve) => setTimeout(resolve, 1100));
-  Promise.all([firstBreath, ...artwork.map((image) => revealImage(image, false))]).then(() => {
-    render();
-    root.classList.remove('is-loading');
-  });
+  revealForest(Promise.all(artwork.map((image) => revealImage(image, false))));
 
   for (const image of document.querySelectorAll('.footer img')) {
     revealImage(image, true);
