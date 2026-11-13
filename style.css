@@ -1,0 +1,171 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, system-ui, sans-serif;
+  background-color: #10251a;
+  --content-color: #d2ff7b;
+  --scene-height: 100vh;
+  --scroll-distance: 145vh;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --scene-height: 100dvh;
+    --scroll-distance: 145svh;
+  }
+}
+
+@supports (height: round(145svh, 1px)) {
+  :root {
+    /* Match the browser's integer scroll range at the end of the scene. */
+    --scroll-distance: round(145svh, 1px);
+  }
+}
+
+body {
+  margin: 0;
+}
+
+.page {
+  margin-inline: auto;
+}
+
+@media (min-width: 600px), (orientation: landscape) {
+  .page {
+    max-width: calc(var(--scene-height) * 0.5625);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.scene {
+  position: sticky;
+  top: 0;
+  isolation: isolate;
+  height: var(--scene-height);
+  overflow: hidden;
+}
+
+.scene::after {
+  --fade-mask: linear-gradient(to bottom,
+    transparent,
+    rgb(0 0 0 / 3%) 20%,
+    rgb(0 0 0 / 7%) 27%,
+    rgb(0 0 0 / 14%) 34%,
+    rgb(0 0 0 / 23%) 41%,
+    rgb(0 0 0 / 36%) 48%,
+    rgb(0 0 0 / 51%) 55%,
+    rgb(0 0 0 / 67%) 62%,
+    rgb(0 0 0 / 80%) 69%,
+    rgb(0 0 0 / 90%) 76%,
+    rgb(0 0 0 / 96%) 83%,
+    rgb(0 0 0 / 99%) 93%,
+    black 98%);
+  position: absolute;
+  inset: auto 0 0;
+  height: 30%;
+  background: var(--content-color);
+  -webkit-mask-image: var(--fade-mask);
+  mask-image: var(--fade-mask);
+  content: '';
+  pointer-events: none;
+}
+
+/* The supplied images share a single 1080 × 1920 coordinate space. */
+.artwork {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, calc(var(--scene-height) * 0.5625));
+  aspect-ratio: 9 / 16;
+  transform: translate(-50%, -50%);
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.upper-leaves {
+  transform: translateY(-56%);
+}
+
+.left-leaves {
+  transform: translateX(-69%);
+}
+
+.right-leaves {
+  transform: translateX(68%);
+}
+
+.content,
+.footer {
+  color-scheme: light;
+  color: #10251a;
+  background: var(--content-color);
+}
+
+.content {
+  aspect-ratio: 1080 / 988;
+}
+
+.footer {
+  position: relative;
+}
+
+.footer-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .has-motion .journey {
+    min-height: calc(var(--scene-height) + var(--scroll-distance));
+  }
+
+  .has-motion .character {
+    transform: translateY(var(--character-y, 3.4%));
+  }
+
+  .has-motion .logo {
+    opacity: var(--logo-opacity, 0);
+    transform: translateY(var(--logo-y, 44%));
+  }
+
+  .lower-leaves {
+    transform-origin: center bottom;
+    animation: breeze 13s ease-in-out infinite;
+  }
+
+  .has-motion .upper-leaves {
+    transform: translateY(var(--upper-y, 0%));
+  }
+
+  .has-motion .left-leaves {
+    transform: translateX(var(--left-x, 0%));
+  }
+
+  .has-motion .right-leaves {
+    transform: translateX(var(--right-x, 0%));
+  }
+}
+
+@keyframes breeze {
+  0%, 100% { transform: scale(1, 1) skewX(0deg); }
+  27% { transform: scale(1.013, 1.008) skewX(-0.32deg); }
+  52% { transform: scale(1.002, 1.003) skewX(0.05deg); }
+  76% { transform: scale(1.011, 1.006) skewX(0.27deg); }
+}
