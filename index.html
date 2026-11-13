@@ -6,6 +6,12 @@
   <meta name="description" content="Aiyra e a Mãe da Floresta.">
   <meta name="theme-color" content="#10251a">
   <title>Aiyra e a Mãe da Floresta</title>
+  <script>
+    if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      document.documentElement.classList.add('is-loading');
+      setTimeout(() => document.documentElement.classList.remove('is-loading'), 4500);
+    }
+  </script>
   <link rel="stylesheet" href="style.css">
   <script src="animation.js" defer></script>
 </head>
@@ -17,13 +23,15 @@
       <div class="journey">
         <div class="scene">
           <div class="artwork" role="img" aria-label="Aiyra e um tucano em meio a folhas verdes desenhadas.">
-            <img class="layer background" src="assets/Folhas_BG.png" alt="" width="1080" height="1920" fetchpriority="high">
-            <img class="layer logo" src="assets/Logo.png" alt="" width="1080" height="1920">
-            <img class="layer character" src="assets/Personagem.png" alt="" width="1080" height="1920">
-            <img class="layer lower-leaves" src="assets/Folhas_Baixo.png" alt="" width="1080" height="1920">
-            <img class="layer upper-leaves" src="assets/Folhas_Alto.png" alt="" width="1080" height="1920">
-            <img class="layer left-leaves" src="assets/Folhas_Esquerda.png" alt="" width="1080" height="1920">
-            <img class="layer right-leaves" src="assets/Folhas_Direita.png" alt="" width="1080" height="1920">
+            <img class="layer background" src="assets/Folhas_BG.webp" alt="" width="1080" height="1920" decoding="async" fetchpriority="high">
+            <div class="layer foreground">
+              <img class="layer logo" src="assets/Logo.png" alt="" width="1080" height="1920" decoding="async">
+              <img class="layer character" src="assets/Personagem.webp" alt="" width="1080" height="1920" decoding="async">
+              <img class="layer lower-leaves" src="assets/Folhas_Baixo.webp" alt="" width="1080" height="1920" decoding="async">
+              <img class="layer upper-leaves" src="assets/Folhas_Alto.webp" alt="" width="1080" height="1920" decoding="async">
+              <img class="layer left-leaves" src="assets/Folhas_Esquerda.webp" alt="" width="1080" height="1920" decoding="async">
+              <img class="layer right-leaves" src="assets/Folhas_Direita.webp" alt="" width="1080" height="1920" decoding="async">
+            </div>
           </div>
         </div>
       </div>
@@ -32,8 +40,8 @@
     </main>
 
     <footer class="footer">
-      <img class="footer-art" src="assets/Rodap%C3%A9.png" alt="" width="1080" height="844" loading="lazy">
-      <img class="layer footer-logo" src="assets/Logo_Flopes.png" alt="Flopes — arte e fotografia" width="1080" height="844" loading="lazy">
+      <img class="footer-art" src="assets/Rodap%C3%A9.webp" alt="" width="1080" height="844" loading="lazy" decoding="async">
+      <img class="layer footer-logo" src="assets/Logo_Flopes.png" alt="Flopes — arte e fotografia" width="1080" height="844" loading="lazy" decoding="async">
     </footer>
   </div>
 </body>

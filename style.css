@@ -7,9 +7,10 @@
   --scroll-distance: 145vh;
 }
 
-@supports (height: 100dvh) {
+@supports (height: 100lvh) {
   :root {
-    --scene-height: 100dvh;
+    /* Keep the artwork still while the phone browser's toolbar slides. */
+    --scene-height: 100lvh;
     --scroll-distance: 145svh;
   }
 }
@@ -132,6 +133,41 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .scene::before {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 42%, #38592b, #203b21 48%, #10251a 75%);
+    content: '';
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 560ms ease-out;
+  }
+
+  .is-loading .scene::before {
+    animation: forest-light 2200ms ease-in-out infinite alternate;
+    opacity: 1;
+  }
+
+  .scene::after,
+  .foreground,
+  .background {
+    transition: opacity 740ms ease-out;
+  }
+
+  .is-loading .foreground,
+  .is-loading:not(.forest-ready) .background,
+  .is-loading:not(.forest-ready) .scene::after {
+    opacity: 0;
+  }
+
+  .waiting-image {
+    visibility: hidden;
+  }
+
+  .arriving-image {
+    animation: image-arrival 650ms ease-out;
+  }
+
   .has-motion .journey {
     min-height: calc(var(--scene-height) + var(--scroll-distance));
   }
@@ -147,7 +183,12 @@ body {
 
   .lower-leaves {
     transform-origin: center bottom;
-    animation: breeze 13s ease-in-out infinite;
+    --breeze: breeze 13s ease-in-out infinite;
+    animation: var(--breeze);
+  }
+
+  .lower-leaves.arriving-image {
+    animation: var(--breeze), image-arrival 650ms ease-out;
   }
 
   .has-motion .upper-leaves {
@@ -161,6 +202,14 @@ body {
   .has-motion .right-leaves {
     transform: translateX(var(--right-x, 0%));
   }
+}
+
+@keyframes forest-light {
+  to { transform: scale(1.24); }
+}
+
+@keyframes image-arrival {
+  from { opacity: 0; }
 }
 
 @keyframes breeze {

@@ -1,7 +1,9 @@
 const journey = document.querySelector('.journey');
 const scene = document.querySelector('.scene');
+const root = document.documentElement;
 const motionPreference = window.matchMedia('(prefers-reduced-motion: no-preference)');
 let pendingFrame = 0;
+let lastProgress;
 
 // The easing depends on position alone, so scrolling back retraces every layer.
 function easeSegment(progress, start, end) {
@@ -15,7 +17,9 @@ function render() {
 
   const bounds = journey.getBoundingClientRect();
   const distance = bounds.height - scene.getBoundingClientRect().height;
-  const progress = distance > 0 ? -bounds.top / distance : 1;
+  const progress = distance > 0 ? Math.min(1, Math.max(0, -bounds.top / distance)) : 1;
+  if (progress === lastProgress) return;
+  lastProgress = progress;
 
   const character = easeSegment(progress, 0.11, 0.84);
   const logoLift = easeSegment(progress, 0.2, 0.95);
@@ -38,10 +42,47 @@ function scheduleRender() {
   }
 }
 
-document.documentElement.classList.add('has-motion');
+function whenDecoded(image) {
+  if (image.complete) return image.decode();
+
+  return new Promise((resolve, reject) => {
+    image.addEventListener('load', () => resolve(image.decode()), { once: true });
+    image.addEventListener('error', reject, { once: true });
+  });
+}
+
+function revealImage(image, revealSeparately) {
+  image.classList.add('waiting-image');
+
+  return whenDecoded(image).then(() => {
+    if (revealSeparately || !root.classList.contains('is-loading')) {
+      image.classList.add('arriving-image');
+    }
+    image.classList.remove('waiting-image');
+
+    if (image.classList.contains('background')) root.classList.add('forest-ready');
+  }, () => {});
+}
+
+root.classList.add('has-motion');
 render();
 
 window.addEventListener('scroll', scheduleRender, { passive: true });
 window.addEventListener('resize', scheduleRender);
 window.addEventListener('pageshow', scheduleRender);
 motionPreference.addEventListener('change', scheduleRender);
+
+if (root.classList.contains('is-loading')) {
+  const artwork = [...scene.querySelectorAll('img')];
+  Promise.all(artwork.map((image) => revealImage(image, false))).then(() => {
+    // Paint the starting state even when the images come from the browser cache.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      render();
+      root.classList.remove('is-loading');
+    }));
+  });
+
+  for (const image of document.querySelectorAll('.footer img')) {
+    revealImage(image, true);
+  }
+}
