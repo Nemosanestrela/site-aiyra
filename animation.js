@@ -60,7 +60,6 @@ function revealImage(image, revealSeparately) {
     }
     image.classList.remove('waiting-image');
 
-    if (image.classList.contains('background')) root.classList.add('forest-ready');
   }, () => {});
 }
 
@@ -74,12 +73,10 @@ motionPreference.addEventListener('change', scheduleRender);
 
 if (root.classList.contains('is-loading')) {
   const artwork = [...scene.querySelectorAll('img')];
-  Promise.all(artwork.map((image) => revealImage(image, false))).then(() => {
-    // Paint the starting state even when the images come from the browser cache.
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      render();
-      root.classList.remove('is-loading');
-    }));
+  const firstBreath = new Promise((resolve) => setTimeout(resolve, 1100));
+  Promise.all([firstBreath, ...artwork.map((image) => revealImage(image, false))]).then(() => {
+    render();
+    root.classList.remove('is-loading');
   });
 
   for (const image of document.querySelectorAll('.footer img')) {

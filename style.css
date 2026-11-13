@@ -132,32 +132,39 @@ body {
   height: auto;
 }
 
+.loading-screen {
+  display: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .scene::before {
-    position: absolute;
+  .loading-screen {
+    position: fixed;
     inset: 0;
-    background: radial-gradient(ellipse at 50% 42%, #38592b, #203b21 48%, #10251a 75%);
-    content: '';
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    background: #10251a;
+    visibility: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 560ms ease-out;
+    transition: opacity 850ms ease-in-out, visibility 850ms;
   }
 
-  .is-loading .scene::before {
-    animation: forest-light 2200ms ease-in-out infinite alternate;
+  .is-loading .loading-screen {
     opacity: 1;
+    visibility: visible;
+    transition: none;
   }
 
-  .scene::after,
-  .foreground,
-  .background {
-    transition: opacity 740ms ease-out;
-  }
-
-  .is-loading .foreground,
-  .is-loading:not(.forest-ready) .background,
-  .is-loading:not(.forest-ready) .scene::after {
-    opacity: 0;
+  .loading-light {
+    width: 9px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #ecffc8;
+    box-shadow: 0 0 12px 3px #d2ff7b9e, 0 0 34px 10px #d2ff7b2e;
+    opacity: 0.55;
+    transform: scale(0.8);
+    animation: breathe 2100ms ease-in-out infinite;
   }
 
   .waiting-image {
@@ -204,8 +211,8 @@ body {
   }
 }
 
-@keyframes forest-light {
-  to { transform: scale(1.24); }
+@keyframes breathe {
+  32% { opacity: 1; transform: scale(1.26); }
 }
 
 @keyframes image-arrival {
