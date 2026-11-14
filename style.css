@@ -2,7 +2,8 @@
   color-scheme: dark;
   font-family: Inter, system-ui, sans-serif;
   background-color: #10251a;
-  --content-color: #d2ff7b;
+  --content-rgb: 210 255 123;
+  --content-color: rgb(var(--content-rgb));
   --scene-height: 100vh;
   --scroll-distance: 145vh;
 }
@@ -52,29 +53,28 @@ body {
   isolation: isolate;
   height: var(--scene-height);
   overflow: hidden;
+  overflow: clip;
 }
 
 .scene::after {
-  --fade-mask: linear-gradient(to bottom,
-    transparent,
-    rgb(0 0 0 / 3%) 20%,
-    rgb(0 0 0 / 7%) 27%,
-    rgb(0 0 0 / 14%) 34%,
-    rgb(0 0 0 / 23%) 41%,
-    rgb(0 0 0 / 36%) 48%,
-    rgb(0 0 0 / 51%) 55%,
-    rgb(0 0 0 / 67%) 62%,
-    rgb(0 0 0 / 80%) 69%,
-    rgb(0 0 0 / 90%) 76%,
-    rgb(0 0 0 / 96%) 83%,
-    rgb(0 0 0 / 99%) 93%,
-    black 98%);
   position: absolute;
-  inset: auto 0 0;
-  height: 30%;
-  background: var(--content-color);
-  -webkit-mask-image: var(--fade-mask);
-  mask-image: var(--fade-mask);
+  inset: 0;
+  z-index: 1;
+  /* Paint the fade directly across the scene, ending in the next section's color. */
+  background: linear-gradient(to bottom,
+    rgb(var(--content-rgb) / 0%) 70%,
+    rgb(var(--content-rgb) / 3%) 76%,
+    rgb(var(--content-rgb) / 7%) 78.1%,
+    rgb(var(--content-rgb) / 14%) 80.2%,
+    rgb(var(--content-rgb) / 23%) 82.3%,
+    rgb(var(--content-rgb) / 36%) 84.4%,
+    rgb(var(--content-rgb) / 51%) 86.5%,
+    rgb(var(--content-rgb) / 67%) 88.6%,
+    rgb(var(--content-rgb) / 80%) 90.7%,
+    rgb(var(--content-rgb) / 90%) 92.8%,
+    rgb(var(--content-rgb) / 96%) 94.9%,
+    rgb(var(--content-rgb) / 99%) 97.9%,
+    var(--content-color) 99%);
   content: '';
   pointer-events: none;
 }
@@ -128,9 +128,20 @@ body {
 }
 
 .content {
+  position: relative;
   display: grid;
   place-items: end center;
   aspect-ratio: 1080 / 988;
+}
+
+.content::before {
+  position: absolute;
+  inset: -2px 0 auto;
+  z-index: 1;
+  height: 3px;
+  background: inherit;
+  content: '';
+  pointer-events: none;
 }
 
 .video-player {
@@ -262,7 +273,7 @@ body {
 
   .floating-light-path .light-halo {
     --halo-radius: calc(clamp(56px, 16vw, 84px) * 1.15);
-    --light-core: 5.75px;
+    --light-core: 7px;
     inset: auto;
     top: calc(var(--halo-radius) * -1.15);
     left: calc(var(--halo-radius) * -1.15);

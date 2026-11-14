@@ -112,12 +112,13 @@ if (root.classList.contains('is-loading')) {
 const floatingLight = document.querySelector('.floating-light');
 const flightPath = floatingLight.querySelector('.floating-light-path');
 const firstFlightDelay = 7000;
-const repeatFlightDelay = 11000;
+const repeatDelayStep = 3000;
 const lightTouchRadius = 38;
 let flightTimer;
 let activeFlight;
 let hasScrolled = false;
 let firstFlightAt;
+let repeatFlightDelay = 11000;
 
 function floatingLightAllowed() {
   return hasScrolled && motionPreference.matches && !document.hidden && !root.classList.contains('is-loading');
@@ -156,11 +157,11 @@ function flyFloatingLight() {
   floatingLight.hidden = false;
   const path = randomFlightPath(floatingLight.clientWidth, floatingLight.clientHeight);
   animateFloatingLight(path, [
-    { offset: 0, offsetDistance: '0%', opacity: 0, easing: 'ease-out' },
-    { offset: 0.22, opacity: 1, easing: 'ease-in-out' },
-    { offset: 0.72, opacity: 0.97, easing: 'ease-in' },
-    { offset: 1, offsetDistance: '100%', opacity: 0 },
-  ], { duration: 6200 + Math.random() * 1400, id: 'drift' });
+    { offset: 0, offsetDistance: '0%', transform: 'scale(1.2)', opacity: 0 },
+    { offset: 0.18, opacity: 1 },
+    { offset: 0.76, opacity: 1 },
+    { offset: 1, offsetDistance: '100%', transform: 'scale(0.7)', opacity: 0 },
+  ], { duration: 6200 + Math.random() * 1400, easing: 'ease-in-out', id: 'drift' });
 }
 
 async function animateFloatingLight(path, keyframes, options) {
@@ -175,30 +176,25 @@ async function animateFloatingLight(path, keyframes, options) {
   activeFlight = undefined;
   floatingLight.hidden = true;
   scheduleFloatingLight();
+  repeatFlightDelay += repeatDelayStep;
 }
 
-function dodgeTouch(event) {
-  if (event.pointerType !== 'touch' || !event.isPrimary || activeFlight?.id !== 'drift') return;
+function expandFloatingLight(event) {
+  if (!event.isPrimary || event.button !== 0 || activeFlight?.id !== 'drift') return;
   if (event.target.closest('button, a, input, select, textarea, label, [role="button"], [contenteditable], .video-player')) return;
 
-  const opacity = Number(getComputedStyle(flightPath).opacity);
+  const { offsetDistance, transform, opacity } = getComputedStyle(flightPath);
+  const currentScale = new DOMMatrixReadOnly(transform).a;
   const position = flightPath.getBoundingClientRect();
-  if (opacity < 0.2 || Math.hypot(event.clientX - position.left, event.clientY - position.top) > lightTouchRadius) return;
+  const distance = Math.hypot(event.clientX - position.left, event.clientY - position.top);
+  if (Number(opacity) < 0.2 || distance > lightTouchRadius * currentScale) return;
 
-  // Start the escape at the light's current screen position and head past a corner.
-  const viewport = floatingLight.getBoundingClientRect();
-  const x = position.left - viewport.left;
-  const y = position.top - viewport.top;
-  const exitX = x < viewport.width / 2 ? -90 : viewport.width + 90;
-  const exitY = y < viewport.height / 2 ? -90 : viewport.height + 90;
-  const bendX = x + (exitX - x) * 0.64;
-  const bendY = y + (exitY - y) * 0.23;
-  const path = `path("M ${x} ${y} Q ${bendX} ${bendY} ${exitX} ${exitY}")`;
-  animateFloatingLight(path, [
-    { offsetDistance: '0%', opacity },
-    { offset: 0.28, opacity },
-    { offsetDistance: '100%', opacity: 0 },
-  ], { duration: 650, easing: 'cubic-bezier(0.18, 0.64, 0.3, 1)', id: 'escape' });
+  // Freeze the point on the path and grow from the light's current size.
+  animateFloatingLight(flightPath.style.offsetPath, [
+    { offsetDistance, transform, opacity, easing: 'ease-out' },
+    { offset: 0.62, transform: `scale(${currentScale * 1.3})`, opacity: Number(opacity) * 0.65, easing: 'ease-in-out' },
+    { offsetDistance, transform: `scale(${currentScale * 1.3})`, opacity: 0 },
+  ], { duration: 520, id: 'dissolve' });
 }
 
 function scheduleFloatingLight() {
@@ -230,7 +226,7 @@ window.addEventListener('scroll', function startFloatingLight() {
   scheduleFloatingLight();
   window.removeEventListener('scroll', startFloatingLight);
 }, { passive: true });
-document.addEventListener('pointerdown', dodgeTouch, { passive: true });
+document.addEventListener('pointerdown', expandFloatingLight, { passive: true });
 document.addEventListener('visibilitychange', syncFloatingLight);
 motionPreference.addEventListener('change', syncFloatingLight);
 window.addEventListener('pagehide', stopFloatingLight);
