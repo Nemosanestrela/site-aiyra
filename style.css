@@ -136,20 +136,25 @@ body {
   display: none;
 }
 
+@property --light-spread {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .loading-screen {
     position: fixed;
     inset: 0;
     z-index: 1;
-    display: grid;
-    place-items: center;
+    display: block;
     overflow: hidden;
     background: #10251a;
     color: #fff;
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 1650ms ease-in-out, visibility 0s linear 1650ms;
+    transition: opacity 980ms ease-in-out, visibility 0s linear 980ms;
   }
 
   .is-loading .loading-screen {
@@ -159,34 +164,36 @@ body {
   }
 
   .is-landed .loading-screen {
-    animation: leaf-tint 1450ms ease-in-out both;
+    --tint: leaf-tint 1250ms ease-in-out both;
+    animation: var(--tint);
+  }
+
+  .is-expanding .loading-screen {
+    animation: var(--tint), forest-reveal 980ms ease-in-out 850ms forwards;
   }
 
   .loading-drift {
     position: absolute;
-    display: grid;
-    place-items: center;
-    width: 1px;
-    height: 1px;
-    transition: opacity 900ms ease-in-out;
+    inset: 0;
   }
 
   .loading-light {
-    --halo-mask: radial-gradient(circle closest-side,
-      #000 3px,
-      rgb(0 0 0 / 89%) 5px,
-      rgb(0 0 0 / 30%) 15%,
-      rgb(0 0 0 / 11%) 42%,
-      rgb(0 0 0 / 3%) 68%,
-      transparent);
+    --halo-radius: clamp(105px, 31vw, 155px);
+    --light-spread: 0px;
+    /* Move the stops of a single gradient outward as the light expands. */
+    --halo-mask: radial-gradient(circle,
+      #000 calc(var(--light-spread) + 5px),
+      rgb(0 0 0 / 96%) calc(var(--light-spread) + 9px),
+      rgb(0 0 0 / 59%) calc(var(--light-spread) + var(--halo-radius) * 0.19),
+      rgb(0 0 0 / 29%) calc(var(--light-spread) + var(--halo-radius) * 0.39),
+      rgb(0 0 0 / 11%) calc(var(--light-spread) + var(--halo-radius) * 0.63),
+      transparent calc(var(--light-spread) + var(--halo-radius)));
     position: absolute;
-    width: clamp(145px, 43vw, 210px);
-    aspect-ratio: 1;
+    inset: -5%;
     background: currentColor;
     -webkit-mask-image: var(--halo-mask);
     mask-image: var(--halo-mask);
-    opacity: 0.67;
-    transform: scale(0.92);
+    transform: scale(0.95);
   }
 
   .is-loading .loading-drift {
@@ -197,24 +204,12 @@ body {
   }
 
   .is-loading .loading-light {
-    animation: breathe 2800ms ease-in-out infinite;
+    --breath: breathe 2800ms ease-in-out infinite;
+    animation: var(--breath);
   }
 
-  .loading-bloom {
-    position: absolute;
-    width: 170vmax;
-    aspect-ratio: 1;
-    background: radial-gradient(circle closest-side, currentColor 86%, transparent 100%);
-    transform: scale(0);
-  }
-
-  .is-expanding .loading-bloom {
-    animation: bloom 1700ms cubic-bezier(0.53, 0.05, 0.27, 1) both;
-  }
-
-  .is-expanding .loading-drift {
-    opacity: 0;
-    transition-delay: 180ms;
+  .is-expanding .loading-light {
+    animation: var(--breath), expand-light 1200ms cubic-bezier(0.46, 0, 0.27, 1) both;
   }
 
   .waiting-image {
@@ -262,7 +257,7 @@ body {
 }
 
 @keyframes breathe {
-  50% { opacity: 1; transform: scale(1.14); }
+  50% { transform: scale(1.06); }
 }
 
 @keyframes feather-fall {
@@ -283,11 +278,13 @@ body {
   to { color: var(--content-color); }
 }
 
-/* The opaque part covers all four corners, including on square viewports. */
-@keyframes bloom {
-  from { opacity: 0; transform: scale(0.006); }
-  48% { opacity: 1; }
-  to { opacity: 1; transform: scale(1); }
+@keyframes expand-light {
+  to { --light-spread: 80vmax; }
+}
+
+@keyframes forest-reveal {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 @keyframes image-arrival {

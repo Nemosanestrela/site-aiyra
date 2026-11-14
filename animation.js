@@ -77,21 +77,17 @@ async function revealForest(imagesReady) {
 
   root.classList.add('is-landed');
   // Let the green become visible before growing the light, even with cached images.
-  await Promise.all([imagesReady, wait(760)]);
+  await Promise.all([imagesReady, wait(320)]);
   if (!root.classList.contains('is-loading') || !motionPreference.matches) {
     root.classList.remove('is-loading', 'is-landed');
     return;
   }
 
-  root.classList.add('is-expanding');
-  const [expansion] = cover.querySelector('.loading-bloom').getAnimations();
-  if (expansion) await Promise.allSettled([expansion.finished]);
-  await wait(100);
-
   render();
-  root.classList.remove('is-loading');
-  await Promise.allSettled(cover.getAnimations().map((transition) => transition.finished));
-  root.classList.remove('is-expanding', 'is-landed');
+  root.classList.add('is-expanding');
+  const reveal = cover.getAnimations().find((animation) => animation.animationName === 'forest-reveal');
+  if (reveal) await Promise.allSettled([reveal.finished]);
+  root.classList.remove('is-loading', 'is-expanding', 'is-landed');
 }
 
 root.classList.add('has-motion');
