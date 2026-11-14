@@ -7,6 +7,18 @@
   <meta name="theme-color" content="#10251a">
   <title>Aiyra e a Mãe da Floresta</title>
   <script>
+    if (performance.getEntriesByType('navigation')[0]?.type === 'reload') {
+      const previousRestoration = history.scrollRestoration;
+      history.scrollRestoration = 'manual';
+      window.scrollTo(0, 0);
+      window.addEventListener('pageshow', () => {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0);
+          history.scrollRestoration = previousRestoration;
+        });
+      }, { once: true });
+    }
+
     if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
       const root = document.documentElement;
       const driftStrength = 0.8 + Math.random() * 0.4;
@@ -17,7 +29,7 @@
       }, 20000);
     }
   </script>
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
   <script src="animation.js?v=6" defer></script>
 </head>
 <body>

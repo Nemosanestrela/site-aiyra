@@ -142,6 +142,18 @@ body {
   initial-value: 0px;
 }
 
+@property --flame-intensity {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --halo-reverberation {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .loading-screen {
     position: fixed;
@@ -184,16 +196,18 @@ body {
     --halo-mask: radial-gradient(circle,
       #000 calc(var(--light-spread) + 5px),
       rgb(0 0 0 / 96%) calc(var(--light-spread) + 9px),
-      rgb(0 0 0 / 59%) calc(var(--light-spread) + var(--halo-radius) * 0.19),
-      rgb(0 0 0 / 29%) calc(var(--light-spread) + var(--halo-radius) * 0.39),
-      rgb(0 0 0 / 11%) calc(var(--light-spread) + var(--halo-radius) * 0.63),
+      rgb(0 0 0 / calc(0.59 * var(--flame-intensity))) calc(var(--light-spread) + var(--halo-radius) * 0.19),
+      rgb(0 0 0 / calc(0.34 * var(--flame-intensity))) calc(var(--light-spread) + var(--halo-radius) * 0.39),
+      rgb(0 0 0 / calc(0.15 * var(--halo-reverberation))) calc(var(--light-spread) + var(--halo-radius) * 0.58),
+      rgb(0 0 0 / calc(0.06 * var(--halo-reverberation))) calc(var(--light-spread) + var(--halo-radius) * 0.76),
+      rgb(0 0 0 / calc(0.019 * var(--halo-reverberation))) calc(var(--light-spread) + var(--halo-radius) * 0.90),
       transparent calc(var(--light-spread) + var(--halo-radius)));
     position: absolute;
-    inset: -5%;
+    inset: -29%;
     background: currentColor;
     -webkit-mask-image: var(--halo-mask);
     mask-image: var(--halo-mask);
-    transform: scale(0.95);
+    transform: rotate(-3deg) skewX(-2deg) scale(0.97, 1.04);
   }
 
   .is-loading .loading-drift {
@@ -204,7 +218,7 @@ body {
   }
 
   .is-loading .loading-light {
-    --breath: breathe 2800ms ease-in-out infinite;
+    --breath: candle-flicker 2700ms ease-in-out infinite, halo-reverberation 2700ms ease-in-out infinite;
     animation: var(--breath);
   }
 
@@ -256,20 +270,48 @@ body {
   }
 }
 
-@keyframes breathe {
-  50% { transform: scale(1.06); }
+@keyframes candle-flicker {
+  0%, 100% {
+    --flame-intensity: 1;
+    transform: rotate(-3deg) skewX(-2deg) scale(0.97, 1.04);
+  }
+  21% {
+    --flame-intensity: 1.05;
+    transform: rotate(1deg) skewX(2deg) scale(0.98, 1.07);
+  }
+  36% {
+    --flame-intensity: 0.96;
+    transform: rotate(0deg) skewX(1deg) scale(1, 1.025);
+  }
+  67% {
+    --flame-intensity: 1.03;
+    transform: rotate(-2deg) skewX(-1deg) scale(0.98, 1.06);
+  }
+  82% {
+    --flame-intensity: 0.94;
+    transform: rotate(-4deg) skewX(-3deg) scale(0.96, 1.01);
+  }
+}
+
+/* The light at the edges follows each rise and fades further than the core. */
+@keyframes halo-reverberation {
+  0%, 100% { --halo-reverberation: 0.89; }
+  27% { --halo-reverberation: 1.13; }
+  43% { --halo-reverberation: 0.83; }
+  73% { --halo-reverberation: 1.08; }
+  88% { --halo-reverberation: 0.84; }
 }
 
 @keyframes feather-fall {
-  from { transform: translateY(-52vh); }
-  to { transform: translateY(0); }
+  from { transform: translateY(-52vh) scale(1); }
+  to { transform: translateY(0) scale(0.75); }
 }
 
 @keyframes feather-sway {
   0% { translate: calc(-10vw * var(--drift-bias)) 0; }
-  24% { translate: calc(15vw * var(--drift-bias)) 0; }
-  51% { translate: calc(-13vw * var(--drift-bias)) 0; }
-  76% { translate: calc(7vw * var(--drift-bias)) 0; }
+  27% { translate: calc(13vw * var(--drift-bias)) 0; }
+  58% { translate: calc(-8vw * var(--drift-bias)) 0; }
+  83% { translate: calc(3vw * var(--drift-bias)) 0; }
   100% { translate: 0 0; }
 }
 
@@ -279,7 +321,8 @@ body {
 }
 
 @keyframes expand-light {
-  to { --light-spread: 80vmax; }
+  /* Compensate for the 0.75 landing scale so the bloom keeps its reach. */
+  to { --light-spread: 107vmax; }
 }
 
 @keyframes forest-reveal {
