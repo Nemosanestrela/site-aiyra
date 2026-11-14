@@ -111,7 +111,9 @@ if (root.classList.contains('is-loading')) {
 
 const floatingLight = document.querySelector('.floating-light');
 const flightPath = floatingLight.querySelector('.floating-light-path');
-const flightDelay = 11000;
+const firstFlightDelay = 7000;
+const repeatFlightDelay = 11000;
+const lightTouchRadius = 38;
 let flightTimer;
 let activeFlight;
 let hasScrolled = false;
@@ -146,18 +148,25 @@ function randomFlightPath(width, height) {
   return `path("M ${points[0].join(' ')} ${segments.join(' ')}")`;
 }
 
-async function flyFloatingLight() {
+function flyFloatingLight() {
   flightTimer = undefined;
   if (!floatingLightAllowed()) return;
 
+  firstFlightAt = undefined;
   floatingLight.hidden = false;
-  flightPath.style.offsetPath = randomFlightPath(floatingLight.clientWidth, floatingLight.clientHeight);
-  const flight = flightPath.animate([
+  const path = randomFlightPath(floatingLight.clientWidth, floatingLight.clientHeight);
+  animateFloatingLight(path, [
     { offset: 0, offsetDistance: '0%', opacity: 0, easing: 'ease-out' },
     { offset: 0.22, opacity: 1, easing: 'ease-in-out' },
     { offset: 0.72, opacity: 0.97, easing: 'ease-in' },
     { offset: 1, offsetDistance: '100%', opacity: 0 },
-  ], { duration: 6200 + Math.random() * 1400 });
+  ], { duration: 6200 + Math.random() * 1400, id: 'drift' });
+}
+
+async function animateFloatingLight(path, keyframes, options) {
+  activeFlight?.cancel();
+  flightPath.style.offsetPath = path;
+  const flight = flightPath.animate(keyframes, options);
   activeFlight = flight;
 
   await Promise.allSettled([flight.finished]);
@@ -168,11 +177,34 @@ async function flyFloatingLight() {
   scheduleFloatingLight();
 }
 
+function dodgeTouch(event) {
+  if (event.pointerType !== 'touch' || !event.isPrimary || activeFlight?.id !== 'drift') return;
+  if (event.target.closest('button, a, input, select, textarea, label, [role="button"], [contenteditable], .video-player')) return;
+
+  const opacity = Number(getComputedStyle(flightPath).opacity);
+  const position = flightPath.getBoundingClientRect();
+  if (opacity < 0.2 || Math.hypot(event.clientX - position.left, event.clientY - position.top) > lightTouchRadius) return;
+
+  // Start the escape at the light's current screen position and head past a corner.
+  const viewport = floatingLight.getBoundingClientRect();
+  const x = position.left - viewport.left;
+  const y = position.top - viewport.top;
+  const exitX = x < viewport.width / 2 ? -90 : viewport.width + 90;
+  const exitY = y < viewport.height / 2 ? -90 : viewport.height + 90;
+  const bendX = x + (exitX - x) * 0.64;
+  const bendY = y + (exitY - y) * 0.23;
+  const path = `path("M ${x} ${y} Q ${bendX} ${bendY} ${exitX} ${exitY}")`;
+  animateFloatingLight(path, [
+    { offsetDistance: '0%', opacity },
+    { offset: 0.28, opacity },
+    { offsetDistance: '100%', opacity: 0 },
+  ], { duration: 650, easing: 'cubic-bezier(0.18, 0.64, 0.3, 1)', id: 'escape' });
+}
+
 function scheduleFloatingLight() {
   if (flightTimer !== undefined || activeFlight || !floatingLightAllowed()) return;
 
-  const delay = firstFlightAt === undefined ? flightDelay : Math.max(0, firstFlightAt - performance.now());
-  firstFlightAt = undefined;
+  const delay = firstFlightAt === undefined ? repeatFlightDelay : Math.max(0, firstFlightAt - performance.now());
   flightTimer = setTimeout(flyFloatingLight, delay);
 }
 
@@ -194,10 +226,11 @@ loadingObserver.observe(root, { attributes: true, attributeFilter: ['class'] });
 window.addEventListener('scroll', function startFloatingLight() {
   if (window.scrollY <= 0) return;
   hasScrolled = true;
-  firstFlightAt = performance.now() + flightDelay;
+  firstFlightAt = performance.now() + firstFlightDelay;
   scheduleFloatingLight();
   window.removeEventListener('scroll', startFloatingLight);
 }, { passive: true });
+document.addEventListener('pointerdown', dodgeTouch, { passive: true });
 document.addEventListener('visibilitychange', syncFloatingLight);
 motionPreference.addEventListener('change', syncFloatingLight);
 window.addEventListener('pagehide', stopFloatingLight);
