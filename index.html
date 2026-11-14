@@ -29,12 +29,15 @@
       }, 20000);
     }
   </script>
-  <link rel="stylesheet" href="style.css?v=7">
-  <script src="animation.js?v=6" defer></script>
+  <link rel="stylesheet" href="style.css?v=9">
+  <script src="animation.js?v=8" defer></script>
 </head>
 <body>
   <div class="loading-screen" aria-hidden="true">
-    <span class="loading-drift"><span class="loading-light"></span></span>
+    <span class="loading-drift"><span class="light-halo loading-light"></span></span>
+  </div>
+  <div class="floating-light" aria-hidden="true" hidden>
+    <span class="floating-light-path"><span class="light-halo"></span></span>
   </div>
   <div class="page">
     <main>
@@ -44,6 +47,9 @@
         <div class="scene">
           <div class="artwork" role="img" aria-label="Aiyra e um tucano em meio a folhas verdes desenhadas.">
             <img class="layer background" src="assets/Folhas_BG.webp?v=2" alt="" width="1080" height="1920" decoding="async" fetchpriority="high">
+            <div class="layer rear-leaves">
+              <img class="layer rear-leaves-art" src="assets/Folhas_Baixo.webp?v=2" alt="" width="1080" height="1920" decoding="async">
+            </div>
             <img class="layer logo" src="assets/Logo.png" alt="" width="1080" height="1920" decoding="async">
             <img class="layer character" src="assets/Personagem.webp?v=2" alt="" width="1080" height="1920" decoding="async">
             <img class="layer lower-leaves" src="assets/Folhas_Baixo.webp?v=2" alt="" width="1080" height="1920" decoding="async">
@@ -54,7 +60,15 @@
         </div>
       </div>
 
-      <div class="content" id="conteudo"></div>
+      <div class="content" id="conteudo">
+        <div class="video-player">
+          <button class="video-play" type="button" data-youtube-id="MRvlvlWwvcg" aria-label="Reproduzir Carlinhos Brown — Paxuá e Paramim">
+            <img src="assets/paxua-e-paramim.jpg" alt="" width="480" height="360" loading="lazy" decoding="async">
+            <span class="video-play-icon" aria-hidden="true"></span>
+          </button>
+          <p class="video-note" role="status" hidden></p>
+        </div>
+      </div>
     </main>
 
     <footer class="footer">

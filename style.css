@@ -99,6 +99,15 @@ body {
   user-select: none;
 }
 
+.rear-leaves {
+  --rear-leaves-rise: 17.92%;
+  transform: translateY(calc(-1 * var(--rear-leaves-rise)));
+}
+
+.rear-leaves-art {
+  scale: -1 1;
+}
+
 .upper-leaves {
   transform: translateY(-56%);
 }
@@ -119,7 +128,81 @@ body {
 }
 
 .content {
+  display: grid;
+  place-items: end center;
   aspect-ratio: 1080 / 988;
+}
+
+.video-player {
+  position: relative;
+  z-index: 11;
+  width: 81%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid #15391f66;
+  border-radius: clamp(6px, 1.5vw, 14px);
+  background: #10251a;
+  box-shadow: 0 8px 12px #10251a40, 0 18px 36px #2338134d;
+}
+
+.video-play,
+.video-player iframe {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-play {
+  place-items: center;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.video-note {
+  position: absolute;
+  inset: auto 0 0;
+  margin: 0;
+  padding: 8px 12px;
+  color: #fff;
+  background: #10251a;
+  font-size: 0.8rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.video-play:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: -5px;
+}
+
+.video-play img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-play-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  aspect-ratio: 1;
+  border: 1px solid #ffffffa6;
+  border-radius: 50%;
+  background: #10251ad9;
+  color: #fff;
+}
+
+.video-play-icon::after {
+  margin-left: 3px;
+  border-block: 7px solid transparent;
+  border-left: 11px solid currentColor;
+  content: '';
 }
 
 .footer {
@@ -132,7 +215,8 @@ body {
   height: auto;
 }
 
-.loading-screen {
+.loading-screen,
+.floating-light {
   display: none;
 }
 
@@ -155,10 +239,42 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .floating-light:not([hidden]) {
+    display: block;
+  }
+
+  .floating-light {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    overflow: hidden;
+    color: #fff;
+    pointer-events: none;
+  }
+
+  .floating-light-path {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    offset-rotate: 0deg;
+  }
+
+  .floating-light-path .light-halo {
+    --halo-radius: calc(clamp(56px, 16vw, 84px) * 1.15);
+    --light-core: 5.75px;
+    inset: auto;
+    top: calc(var(--halo-radius) * -1.15);
+    left: calc(var(--halo-radius) * -1.15);
+    width: calc(var(--halo-radius) * 2.3);
+    aspect-ratio: 1;
+    animation: var(--light-pulse);
+  }
+
   .loading-screen {
     position: fixed;
     inset: 0;
-    z-index: 1;
+    z-index: 20;
     display: block;
     overflow: hidden;
     background: #10251a;
@@ -189,13 +305,14 @@ body {
     inset: 0;
   }
 
-  .loading-light {
+  .light-halo {
     --halo-radius: clamp(105px, 31vw, 155px);
+    --light-pulse: candle-flicker 2700ms ease-in-out infinite, halo-reverberation 2700ms ease-in-out infinite;
     --light-spread: 0px;
     /* Move the stops of a single gradient outward as the light expands. */
     --halo-mask: radial-gradient(circle,
-      #000 calc(var(--light-spread) + 5px),
-      rgb(0 0 0 / 96%) calc(var(--light-spread) + 9px),
+      #000 calc(var(--light-spread) + var(--light-core, 5px)),
+      rgb(0 0 0 / 96%) calc(var(--light-spread) + var(--light-core, 5px) * 1.8),
       rgb(0 0 0 / calc(0.59 * var(--flame-intensity))) calc(var(--light-spread) + var(--halo-radius) * 0.19),
       rgb(0 0 0 / calc(0.34 * var(--flame-intensity))) calc(var(--light-spread) + var(--halo-radius) * 0.39),
       rgb(0 0 0 / calc(0.15 * var(--halo-reverberation))) calc(var(--light-spread) + var(--halo-radius) * 0.58),
@@ -218,12 +335,11 @@ body {
   }
 
   .is-loading .loading-light {
-    --breath: candle-flicker 2700ms ease-in-out infinite, halo-reverberation 2700ms ease-in-out infinite;
-    animation: var(--breath);
+    animation: var(--light-pulse);
   }
 
   .is-expanding .loading-light {
-    animation: var(--breath), expand-light 1200ms cubic-bezier(0.46, 0, 0.27, 1) both;
+    animation: var(--light-pulse), expand-light 1200ms cubic-bezier(0.46, 0, 0.27, 1) both;
   }
 
   .waiting-image {
@@ -247,13 +363,19 @@ body {
     transform: translateY(var(--logo-y, 44%));
   }
 
-  .lower-leaves {
+  .has-motion .rear-leaves {
+    transform: translateY(calc(-1 * var(--rear-leaves-rise) * var(--rear-leaves-progress, 0)));
+  }
+
+  .lower-leaves,
+  .rear-leaves-art {
     transform-origin: center bottom;
     --breeze: breeze 13s ease-in-out infinite;
     animation: var(--breeze);
   }
 
-  .lower-leaves.arriving-image {
+  .lower-leaves.arriving-image,
+  .rear-leaves-art.arriving-image {
     animation: var(--breeze), image-arrival 650ms ease-out;
   }
 
