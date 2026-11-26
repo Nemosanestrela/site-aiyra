@@ -112,7 +112,7 @@ body {
 
 .character,
 .logo {
-  translate: 13% 0;
+  translate: 4% 0;
 }
 
 .rear-leaves {
@@ -255,7 +255,7 @@ body {
 }
 
 .manual-preparation {
-  padding-top: calc(27 * var(--u));
+  padding-top: calc(46.8 * var(--u));
 }
 
 .manual-preparation img {
@@ -269,7 +269,7 @@ body {
   color: #24561f;
   font-size: calc(62.4 * var(--u));
   line-height: calc(72.8 * var(--u));
-  margin-top: calc(1.5 * var(--u));
+  margin-top: calc(21.3 * var(--u));
 }
 
 .manual-preparation p {
@@ -422,7 +422,7 @@ body {
   color: #24561f;
   font-weight: 700;
   font-size: calc(70.2 * var(--u));
-  line-height: calc(83.2 * var(--u));
+  line-height: calc(74 * var(--u));
   letter-spacing: calc(1 * var(--u));
 }
 
@@ -513,7 +513,7 @@ body {
 .footer-rights {
   position: absolute;
   inset-inline: 12px;
-  bottom: 12px;
+  bottom: 6px;
   z-index: 2;
   margin: 0;
   color: #fff;
