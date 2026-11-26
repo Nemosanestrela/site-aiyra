@@ -112,7 +112,7 @@ body {
 
 .character,
 .logo {
-  translate: 4% 0;
+  translate: 0 0;
 }
 
 .rear-leaves {
@@ -281,7 +281,7 @@ body {
 
 .germination-flow {
   padding: 0;
-  margin: calc(92 * var(--u)) 0 0;
+  margin: calc(66.47 * var(--u)) 0 0;
   list-style: none;
 }
 
@@ -367,7 +367,7 @@ body {
 }
 
 .after-germination {
-  margin-top: calc(44 * var(--u));
+  margin-top: calc(52.8 * var(--u));
 }
 
 .planting-flow {
