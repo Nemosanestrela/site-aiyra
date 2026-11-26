@@ -111,6 +111,9 @@ if (root.classList.contains('is-loading')) {
 
 const floatingLight = document.querySelector('.floating-light');
 const flightPath = floatingLight.querySelector('.floating-light-path');
+const lightParticles = document.createElement('span');
+lightParticles.className = 'light-particles';
+floatingLight.append(lightParticles);
 const firstFlightDelay = 7000;
 const repeatDelayStep = 3000;
 const lightTouchRadius = 38;
@@ -174,9 +177,39 @@ async function animateFloatingLight(path, keyframes, options) {
   if (activeFlight !== flight) return;
 
   activeFlight = undefined;
+  clearLightParticles();
   floatingLight.hidden = true;
   scheduleFloatingLight();
   repeatFlightDelay += repeatDelayStep;
+}
+
+function clearLightParticles() {
+  for (const animation of lightParticles.getAnimations({ subtree: true })) animation.cancel();
+  lightParticles.replaceChildren();
+}
+
+function burstLightParticles(position) {
+  clearLightParticles();
+
+  for (let index = 0; index < 12; index += 1) {
+    const particle = document.createElement('span');
+    particle.className = 'light-particle';
+    particle.style.left = `${position.left}px`;
+    particle.style.top = `${position.top}px`;
+    particle.style.width = `${1.5 + Math.random() * 2}px`;
+    lightParticles.append(particle);
+
+    const angle = (index + Math.random() * 0.65) * Math.PI * 2 / 12;
+    const distance = 24 + Math.random() * 64;
+    const x = Math.cos(angle) * distance;
+    const y = Math.sin(angle) * distance;
+    const particleFlight = particle.animate([
+      { transform: 'translate(-50%, -50%) scale(0.6)', opacity: 0 },
+      { offset: 0.12, opacity: 1 },
+      { transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(0.2)`, opacity: 0 },
+    ], { duration: 500 + Math.random() * 150, easing: 'cubic-bezier(0.16, 0.7, 0.3, 1)', fill: 'forwards' });
+    particleFlight.finished.catch(() => {});
+  }
 }
 
 function expandFloatingLight(event) {
@@ -189,12 +222,13 @@ function expandFloatingLight(event) {
   const distance = Math.hypot(event.clientX - position.left, event.clientY - position.top);
   if (Number(opacity) < 0.2 || distance > lightTouchRadius * currentScale) return;
 
-  // Freeze the point on the path and grow from the light's current size.
+  burstLightParticles(position);
+  // Keep the core at the touched point while the particles disperse around it.
   animateFloatingLight(flightPath.style.offsetPath, [
     { offsetDistance, transform, opacity, easing: 'ease-out' },
-    { offset: 0.62, transform: `scale(${currentScale * 1.3})`, opacity: Number(opacity) * 0.65, easing: 'ease-in-out' },
-    { offsetDistance, transform: `scale(${currentScale * 1.3})`, opacity: 0 },
-  ], { duration: 520, id: 'dissolve' });
+    { offset: 0.22, transform: `scale(${currentScale * 1.12})`, opacity: Number(opacity) * 0.35, easing: 'ease-in-out' },
+    { offsetDistance, transform: `scale(${currentScale * 0.35})`, opacity: 0 },
+  ], { duration: 650, id: 'dissolve' });
 }
 
 function scheduleFloatingLight() {
@@ -209,6 +243,7 @@ function stopFloatingLight() {
   flightTimer = undefined;
   activeFlight?.cancel();
   activeFlight = undefined;
+  clearLightParticles();
   floatingLight.hidden = true;
 }
 
@@ -254,3 +289,53 @@ videoPlay.addEventListener('click', () => {
   videoPlay.replaceWith(player);
   player.focus();
 });
+
+const manualBlocks = document.querySelectorAll('[data-reveal]');
+const careTrails = document.querySelectorAll('.care-trail');
+let manualObserver;
+let manualFrame;
+
+function drawCareTrails() {
+  manualFrame = undefined;
+  if (!motionPreference.matches) return;
+
+  for (const trail of careTrails) {
+    const bounds = trail.getBoundingClientRect();
+    const progress = Math.max(0, Math.min(1, (innerHeight * 0.8 - bounds.top) / (bounds.height + innerHeight * 0.2)));
+    trail.style.setProperty('--trail-hidden', 1 - progress);
+  }
+}
+
+function scheduleCareTrails() {
+  if (manualFrame === undefined && motionPreference.matches) {
+    manualFrame = requestAnimationFrame(drawCareTrails);
+  }
+}
+
+function updateManualMotion() {
+  manualObserver?.disconnect();
+  root.classList.toggle('has-manual-motion', motionPreference.matches);
+  if (!motionPreference.matches) {
+    for (const trail of careTrails) trail.style.removeProperty('--trail-hidden');
+    return;
+  }
+
+  manualObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-revealed');
+        manualObserver.unobserve(entry.target);
+      }
+    }
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+  for (const block of manualBlocks) {
+    if (!block.classList.contains('is-revealed')) manualObserver.observe(block);
+  }
+  drawCareTrails();
+}
+
+window.addEventListener('scroll', scheduleCareTrails, { passive: true });
+window.addEventListener('resize', scheduleCareTrails);
+window.addEventListener('pageshow', scheduleCareTrails);
+motionPreference.addEventListener('change', updateManualMotion);
+updateManualMotion();
