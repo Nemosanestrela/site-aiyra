@@ -502,6 +502,7 @@ function updateBookOrder() {
   const lastScrollPosition = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
   const entryPosition = Math.min(window.scrollY + plantBottom, lastScrollPosition);
   const visible = window.scrollY >= entryPosition - 1;
+  root.style.setProperty('--book-order-height', bookOrder.offsetHeight + 'px');
   root.classList.toggle('has-book-order', visible);
   bookOrder.classList.toggle('is-visible', visible);
   bookOrder.inert = !visible;
