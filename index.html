@@ -7,17 +7,12 @@
   <meta name="theme-color" content="#10251a">
   <title>Aiyra e a Mãe da Floresta</title>
   <script>
-    if (performance.getEntriesByType('navigation')[0]?.type === 'reload') {
-      const previousRestoration = history.scrollRestoration;
-      history.scrollRestoration = 'manual';
+    history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+    window.addEventListener('pageshow', () => {
       window.scrollTo(0, 0);
-      window.addEventListener('pageshow', () => {
-        requestAnimationFrame(() => {
-          window.scrollTo(0, 0);
-          history.scrollRestoration = previousRestoration;
-        });
-      }, { once: true });
-    }
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    });
 
     if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
       const root = document.documentElement;
@@ -29,8 +24,8 @@
       }, 20000);
     }
   </script>
-  <link rel="stylesheet" href="style.css?v=16">
-  <script src="animation.js?v=12" defer></script>
+  <link rel="stylesheet" href="style.css?v=21">
+  <script src="animation.js?v=16" defer></script>
 </head>
 <body>
   <div class="loading-screen" aria-hidden="true">
@@ -40,14 +35,17 @@
     <span class="floating-light-path"><span class="light-halo"></span></span>
   </div>
   <div class="page">
-    <audio id="forest-audio" src="assets/audio/forest-ambience.mp3" autoplay loop preload="auto"></audio>
-    <button class="sound-toggle" type="button" aria-label="Desativar áudio ambiente" aria-pressed="true" aria-controls="forest-audio">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-        <path d="M11 5 6 9H3v6h3l5 4Z"></path>
-        <g class="sound-waves"><path d="M15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"></path></g>
-        <path class="sound-off" d="m16 9 5 6m0-6-5 6"></path>
-      </svg>
-    </button>
+    <audio id="forest-audio" src="assets/audio/forest-ambience.mp3" loop preload="metadata"></audio>
+    <div class="sound-control">
+      <p class="sound-hint" id="sound-hint" role="status" aria-hidden="true">TOQUE PARA<br>HABILITAR O ÁUDIO</p>
+      <button class="sound-toggle" type="button" aria-label="Ativar áudio ambiente" aria-pressed="false" aria-expanded="true" aria-controls="forest-audio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M11 5 6 9H3v6h3l5 4Z"></path>
+          <g class="sound-waves"><path d="M15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"></path></g>
+          <path class="sound-off" d="m16 9 5 6m0-6-5 6"></path>
+        </svg>
+      </button>
+    </div>
     <main>
       <h1 class="visually-hidden">Aiyra e a Mãe da Floresta</h1>
 
@@ -102,7 +100,11 @@
             <ol class="germination-flow" aria-label="Cuidados durante a germinação">
               <li>
                 <img src="assets/manual/plastico-filme.webp" alt="" width="421" height="534" loading="lazy" decoding="async">
-                <p data-reveal>O papel filme formará um tipo de estufa. Deixe em local meio à sombra, durante a germinação.</p>
+                <p class="care-copy" data-reveal>
+                  <span class="care-line">O papel filme formará um tipo</span>
+                  <span class="care-line">de estufa. Deixe em local meio</span>
+                  <span class="care-line">à sombra, durante a germinação.</span>
+                </p>
                 <svg class="care-trail" viewBox="0 0 528 104" aria-hidden="true" focusable="false">
                   <defs><mask id="trail-mask-1"><path class="trail-progress" d="M104 0 V22 Q104 49 131 49 H398 Q425 49 425 76 V104" pathLength="1"></path></mask></defs>
                   <path class="trail-dots" d="M104 0 V22 Q104 49 131 49 H398 Q425 49 425 76 V104" mask="url(#trail-mask-1)"></path>
@@ -118,61 +120,67 @@
               </li>
               <li>
                 <img src="assets/manual/sol.webp" alt="" width="702" height="749" loading="lazy" decoding="async">
-                <p data-reveal>A iluminação solar deve ser <strong>indireta</strong>, nesta fase.</p>
+                <p class="care-copy" data-reveal>
+                  <span class="care-line">A iluminação solar deve</span>
+                  <span class="care-line">ser <strong>indireta</strong>, nesta fase.</span>
+                </p>
               </li>
             </ol>
           </section>
 
           <section class="after-germination" aria-labelledby="after-germination-title">
-            <h3 id="after-germination-title" data-reveal>Depois de germinadas</h3>
+            <h3 id="after-germination-title" data-reveal>Depois de<br>germinadas</h3>
 
-            <ol class="planting-flow">
-              <li class="outlined-step" data-reveal>
-                <span class="step-number" aria-hidden="true">1</span>
-                <div class="step-text">
-                  <h4>Espere a semente germinar.</h4>
-                  <p>Mantenha o algodão úmido, mas não encharcado, e observe até surgir uma raizinha.</p>
-                </div>
-              </li>
-              <li>
-                <img src="assets/manual/vaso.webp" alt="" width="477" height="603" loading="lazy" decoding="async">
-                <div class="step-text" data-reveal>
-                  <h4>Prepare um vaso com terra.</h4>
-                  <p>Escolha um vaso com furinhos embaixo para a água escoar. Use uma terra própria para plantio, de preferência leve e rica em matéria orgânica.</p>
-                </div>
-              </li>
-              <li class="outlined-step" data-reveal>
-                <span class="step-number" aria-hidden="true">3</span>
-                <div class="step-text">
-                  <h4>Faça um pequeno buraco na terra.</h4>
-                  <p>Não precisa ser muito fundo — em geral, cerca de <strong>1 a 2 cm</strong>, dependendo do tamanho da semente.</p>
-                </div>
-              </li>
-              <li data-reveal>
-                <span class="step-number" aria-hidden="true">4</span>
-                <div class="step-text">
-                  <h4>Transfira a semente com cuidado.</h4>
-                  <p>Coloque a raiz voltada para baixo e cubra delicadamente com terra. Evite apertar demais.</p>
-                </div>
-              </li>
-              <li class="outlined-step watering-step" data-reveal>
-                <img src="assets/manual/rega.webp" alt="" width="595" height="436" loading="lazy" decoding="async">
-                <div class="step-text">
-                  <p class="watering-copy"><span>Regue levemente. A terra deve ficar</span><br>úmida, mas não encharcada.</p>
-                </div>
-              </li>
-              <li data-reveal>
-                <span class="step-number" aria-hidden="true">6</span>
-                <div class="step-text">
-                  <h4>Deixe em um local iluminado.</h4>
-                  <p>Depois que a muda começar a crescer e aparecerem as primeiras folhinhas, ela pode receber mais luz gradualmente.</p>
-                </div>
-              </li>
-            </ol>
+            <div class="planting-steps" data-reveal>
+              <svg class="planting-border" aria-hidden="true" focusable="false"><rect></rect></svg>
+              <span class="step-number" aria-hidden="true">1</span>
+              <ol class="planting-flow">
+                <li data-reveal>
+                  <div class="step-text">
+                    <h4>Espere a semente germinar.</h4>
+                    <p>Mantenha o algodão úmido, mas não encharcado, e observe até surgir uma raizinha.</p>
+                  </div>
+                </li>
+                <li>
+                  <img src="assets/manual/vaso.webp" alt="" width="477" height="603" loading="lazy" decoding="async">
+                  <div class="step-text" data-reveal>
+                    <h4>Prepare um vaso com terra.</h4>
+                    <p>Escolha um vaso com furinhos embaixo para a água escoar. Use uma terra própria para plantio, de preferência leve e rica em matéria orgânica.</p>
+                  </div>
+                </li>
+                <li data-reveal>
+                  <span class="step-number" aria-hidden="true">3</span>
+                  <div class="step-text">
+                    <h4>Faça um pequeno buraco na terra.</h4>
+                    <p>Não precisa ser muito fundo — em geral, cerca de <strong>1 a 2 cm</strong>, dependendo do tamanho da semente.</p>
+                  </div>
+                </li>
+                <li data-reveal>
+                  <span class="step-number" aria-hidden="true">4</span>
+                  <div class="step-text">
+                    <h4>Transfira a semente com cuidado.</h4>
+                    <p>Coloque a raiz voltada para baixo e cubra delicadamente com terra. Evite apertar demais.</p>
+                  </div>
+                </li>
+                <li data-reveal>
+                  <img src="assets/manual/rega.webp" alt="" width="595" height="436" loading="lazy" decoding="async">
+                  <div class="step-text">
+                    <p class="watering-copy"><span>Regue levemente. A terra deve ficar</span><br>úmida, mas não encharcada.</p>
+                  </div>
+                </li>
+                <li data-reveal>
+                  <span class="step-number" aria-hidden="true">6</span>
+                  <div class="step-text">
+                    <h4>Deixe em um local iluminado.</h4>
+                    <p>Depois que a muda começar a crescer e aparecerem as primeiras folhinhas, ela pode receber mais luz gradualmente.</p>
+                  </div>
+                </li>
+              </ol>
+              <img class="creation-plant" src="assets/manual/vaso-com-planta.webp" alt="" width="477" height="955" loading="lazy" decoding="async">
+            </div>
           </section>
         </section>
 
-        <img class="creation-plant" src="assets/manual/vaso-com-planta.webp" alt="" width="477" height="955" loading="lazy" decoding="async">
         <section class="creation" aria-labelledby="creation-title">
           <h2 id="creation-title" data-reveal>Processo de<br>criação do livro</h2>
           <div class="video-player">
@@ -189,7 +197,16 @@
     <footer class="footer">
       <img class="footer-art" src="assets/Rodap%C3%A9.webp?v=2" alt="" width="1080" height="844" loading="lazy" decoding="async">
       <img class="layer footer-logo" src="assets/Logo_Flopes.png" alt="Flopes — arte e fotografia" width="1080" height="844" loading="lazy" decoding="async">
-      <p class="footer-rights">2026 Flopes</p>
+      <div class="footer-meta">
+        <a class="footer-instagram" href="https://www.instagram.com/flopes.illustration/" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Flopes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" focusable="false">
+            <rect x="3.5" y="3.5" width="17" height="17" rx="4.5"></rect>
+            <circle cx="12" cy="12" r="3.8"></circle>
+            <circle cx="17.3" cy="6.9" r="1" fill="currentColor" stroke="none"></circle>
+          </svg>
+        </a>
+        <p class="footer-rights">©2026 FLOPES</p>
+      </div>
     </footer>
   </div>
 </body>

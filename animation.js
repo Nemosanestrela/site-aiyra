@@ -293,12 +293,30 @@ videoPlay.addEventListener('click', () => {
 
 const manualBlocks = document.querySelectorAll('[data-reveal]');
 const careTrails = document.querySelectorAll('.care-trail');
+const preparationTitle = document.querySelector('.manual-preparation h4');
+const stepBlocks = document.querySelectorAll('.germination-flow [data-reveal], .after-germination [data-reveal]');
 let manualObserver;
 let manualFrame;
+let lastManualScrollY = window.scrollY;
+let preparationPassed = false;
 
 function drawCareTrails() {
   manualFrame = undefined;
   if (!motionPreference.matches) return;
+
+  const nextScrollY = window.scrollY;
+  const preparationTop = preparationTitle.getBoundingClientRect().top;
+  if (preparationPassed && nextScrollY < lastManualScrollY && preparationTop >= 0) {
+    for (const block of stepBlocks) {
+      block.classList.remove('is-revealed');
+      manualObserver.observe(block);
+    }
+    // Commit the hidden state before visible steps enter again.
+    void preparationTitle.offsetHeight;
+    preparationPassed = false;
+  }
+  if (preparationTop < 0) preparationPassed = true;
+  lastManualScrollY = nextScrollY;
 
   for (const trail of careTrails) {
     const bounds = trail.getBoundingClientRect();
@@ -343,28 +361,131 @@ updateManualMotion();
 
 const forestAudio = document.getElementById('forest-audio');
 const soundToggle = document.querySelector('.sound-toggle');
-let soundEnabled = true;
+const soundControl = document.querySelector('.sound-control');
+const soundHint = document.getElementById('sound-hint');
+const maximumVolume = 0.85;
+const volumeFadeDuration = 2400;
+let soundEnabled = false;
+let hintShown = false;
+let compactTimer;
+let volumeFrame;
+let audioContext;
+let audioGain;
+let audioSource;
 
-function playForestAudio() {
-  if (!soundEnabled) return;
-  const playback = forestAudio.play();
-  if (playback) playback.catch(() => {});
+function updateSoundButton() {
+  const compact = soundControl.classList.contains('is-compact');
+  soundToggle.setAttribute('aria-pressed', String(soundEnabled));
+  soundToggle.setAttribute('aria-expanded', String(!compact));
+  soundToggle.setAttribute('aria-label', compact ? 'Mostrar controle de áudio' :
+    soundEnabled ? 'Desativar áudio ambiente' : 'Ativar áudio ambiente');
+}
+
+function hideSoundHint() {
+  soundControl.classList.remove('has-hint');
+  soundHint.setAttribute('aria-hidden', 'true');
+}
+
+function scheduleSoundCollapse(milliseconds = 4500) {
+  clearTimeout(compactTimer);
+  compactTimer = setTimeout(() => {
+    hideSoundHint();
+    soundControl.classList.add('is-compact');
+    updateSoundButton();
+  }, milliseconds);
+}
+
+function syncSoundControl() {
+  const visible = !root.classList.contains('is-loading') &&
+    (!motionPreference.matches || root.classList.contains('has-visible-logo'));
+  if (visible === soundControl.classList.contains('is-visible')) return;
+  soundControl.classList.toggle('is-visible', visible);
+  if (!visible) {
+    clearTimeout(compactTimer);
+    hideSoundHint();
+    if (hintShown) soundControl.classList.add('is-compact');
+  } else if (!hintShown) {
+    hintShown = true;
+    soundControl.classList.add('has-hint');
+    soundHint.setAttribute('aria-hidden', 'false');
+    scheduleSoundCollapse(4500);
+  }
+  updateSoundButton();
+}
+
+function prepareAudioGain() {
+  if (audioGain || location.protocol === 'file:') return;
+  const Context = window.AudioContext || window.webkitAudioContext;
+  if (!Context) return;
+  try {
+    audioContext = new Context();
+    audioSource = audioContext.createMediaElementSource(forestAudio);
+    audioGain = audioContext.createGain();
+    audioGain.gain.value = 0;
+    audioSource.connect(audioGain);
+    audioGain.connect(audioContext.destination);
+  } catch {
+    // Older browsers can fade the media element's own volume.
+    audioGain = undefined;
+  }
+}
+
+function fadeInForestAudio() {
+  cancelAnimationFrame(volumeFrame);
+  if (audioGain) {
+    const curve = Float32Array.from({ length: 64 }, (_, index) => {
+      const progress = index / 63;
+      return maximumVolume * progress * progress * (3 - 2 * progress);
+    });
+    const now = audioContext.currentTime;
+    audioGain.gain.cancelScheduledValues(now);
+    audioGain.gain.setValueCurveAtTime(curve, now, volumeFadeDuration / 1000);
+    return;
+  }
+  const start = performance.now();
+  const fade = (time) => {
+    if (!soundEnabled) return;
+    const progress = Math.min(1, (time - start) / volumeFadeDuration);
+    forestAudio.volume = maximumVolume * progress * progress * (3 - 2 * progress);
+    if (progress < 1) volumeFrame = requestAnimationFrame(fade);
+  };
+  volumeFrame = requestAnimationFrame(fade);
 }
 
 soundToggle.addEventListener('click', () => {
+  if (soundControl.classList.contains('is-compact')) {
+    soundControl.classList.remove('is-compact');
+    updateSoundButton();
+    scheduleSoundCollapse();
+    return;
+  }
+  hideSoundHint();
   soundEnabled = !soundEnabled;
-  soundToggle.setAttribute('aria-pressed', String(soundEnabled));
-  soundToggle.setAttribute('aria-label', soundEnabled ? 'Desativar áudio ambiente' : 'Ativar áudio ambiente');
-  if (soundEnabled) playForestAudio();
-  else forestAudio.pause();
+  updateSoundButton();
+  scheduleSoundCollapse();
+  cancelAnimationFrame(volumeFrame);
+  if (!soundEnabled) {
+    forestAudio.pause();
+    if (audioGain) {
+      audioGain.gain.cancelScheduledValues(audioContext.currentTime);
+      audioGain.gain.setValueAtTime(0, audioContext.currentTime);
+    }
+    return;
+  }
+  prepareAudioGain();
+  forestAudio.volume = audioGain ? 1 : 0;
+  const playback = forestAudio.play();
+  const resumed = audioContext?.resume();
+  Promise.all([playback, resumed]).then(() => {
+    if (soundEnabled) fadeInForestAudio();
+  }).catch(() => {
+    soundEnabled = false;
+    forestAudio.pause();
+    updateSoundButton();
+  });
 });
 
-// Browsers can defer audible autoplay until a gesture on the page.
-document.addEventListener('pointerdown', (event) => {
-  if (!event.target.closest('.sound-toggle')) playForestAudio();
-}, { passive: true });
-document.addEventListener('keydown', (event) => {
-  if (event.target.closest('.sound-toggle') && (event.key === 'Enter' || event.key === ' ')) return;
-  playForestAudio();
-});
-playForestAudio();
+const soundObserver = new MutationObserver(syncSoundControl);
+soundObserver.observe(root, { attributes: true, attributeFilter: ['class'] });
+motionPreference.addEventListener('change', syncSoundControl);
+syncSoundControl();
