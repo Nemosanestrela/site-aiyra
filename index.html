@@ -29,8 +29,8 @@
       }, 20000);
     }
   </script>
-  <link rel="stylesheet" href="style.css?v=15">
-  <script src="animation.js?v=11" defer></script>
+  <link rel="stylesheet" href="style.css?v=16">
+  <script src="animation.js?v=12" defer></script>
 </head>
 <body>
   <div class="loading-screen" aria-hidden="true">
@@ -40,6 +40,14 @@
     <span class="floating-light-path"><span class="light-halo"></span></span>
   </div>
   <div class="page">
+    <audio id="forest-audio" src="assets/audio/forest-ambience.mp3" autoplay loop preload="auto"></audio>
+    <button class="sound-toggle" type="button" aria-label="Desativar áudio ambiente" aria-pressed="true" aria-controls="forest-audio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="M11 5 6 9H3v6h3l5 4Z"></path>
+        <g class="sound-waves"><path d="M15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"></path></g>
+        <path class="sound-off" d="m16 9 5 6m0-6-5 6"></path>
+      </svg>
+    </button>
     <main>
       <h1 class="visually-hidden">Aiyra e a Mãe da Floresta</h1>
 
@@ -119,7 +127,7 @@
             <h3 id="after-germination-title" data-reveal>Depois de germinadas</h3>
 
             <ol class="planting-flow">
-              <li data-reveal>
+              <li class="outlined-step" data-reveal>
                 <span class="step-number" aria-hidden="true">1</span>
                 <div class="step-text">
                   <h4>Espere a semente germinar.</h4>
@@ -133,7 +141,7 @@
                   <p>Escolha um vaso com furinhos embaixo para a água escoar. Use uma terra própria para plantio, de preferência leve e rica em matéria orgânica.</p>
                 </div>
               </li>
-              <li data-reveal>
+              <li class="outlined-step" data-reveal>
                 <span class="step-number" aria-hidden="true">3</span>
                 <div class="step-text">
                   <h4>Faça um pequeno buraco na terra.</h4>
@@ -147,11 +155,10 @@
                   <p>Coloque a raiz voltada para baixo e cubra delicadamente com terra. Evite apertar demais.</p>
                 </div>
               </li>
-              <li>
+              <li class="outlined-step watering-step" data-reveal>
                 <img src="assets/manual/rega.webp" alt="" width="595" height="436" loading="lazy" decoding="async">
-                <div class="step-text" data-reveal>
-                  <h4>Regue levemente.</h4>
-                  <p>A terra deve ficar úmida, mas não encharcada.</p>
+                <div class="step-text">
+                  <p class="watering-copy"><span>Regue levemente. A terra deve ficar</span><br>úmida, mas não encharcada.</p>
                 </div>
               </li>
               <li data-reveal>
@@ -165,9 +172,9 @@
           </section>
         </section>
 
+        <img class="creation-plant" src="assets/manual/vaso-com-planta.webp" alt="" width="477" height="955" loading="lazy" decoding="async">
         <section class="creation" aria-labelledby="creation-title">
-          <img class="creation-plant" src="assets/manual/vaso-com-planta.webp" alt="" width="477" height="955" loading="lazy" decoding="async">
-          <h2 id="creation-title" data-reveal>Processo de criação<br>do livro</h2>
+          <h2 id="creation-title" data-reveal>Processo de<br>criação do livro</h2>
           <div class="video-player">
           <button class="video-play" type="button" data-youtube-id="MSw1YHrfxE4" aria-label="Reproduzir Processo de criação do livro">
             <img src="assets/processo-de-criacao.jpg" alt="" width="480" height="360" loading="lazy" decoding="async">
@@ -182,7 +189,7 @@
     <footer class="footer">
       <img class="footer-art" src="assets/Rodap%C3%A9.webp?v=2" alt="" width="1080" height="844" loading="lazy" decoding="async">
       <img class="layer footer-logo" src="assets/Logo_Flopes.png" alt="Flopes — arte e fotografia" width="1080" height="844" loading="lazy" decoding="async">
-      <p class="footer-rights">© 2026 Flopes. Todos os direitos reservados.</p>
+      <p class="footer-rights">2026 Flopes</p>
     </footer>
   </div>
 </body>

@@ -24,6 +24,7 @@ function render() {
   const character = easeSegment(progress, 0.11, 0.84);
   const logoLift = easeSegment(progress, 0.2, 0.95);
   const logoVisibility = easeSegment(progress, 0.23, 0.62);
+  root.classList.toggle('has-visible-logo', logoVisibility >= 0.9);
   const rearLeaves = easeSegment(progress, 0, 1);
   const upper = easeSegment(progress, 0.02, 0.86);
   const left = easeSegment(progress, 0.04, 0.95);
@@ -339,3 +340,31 @@ window.addEventListener('resize', scheduleCareTrails);
 window.addEventListener('pageshow', scheduleCareTrails);
 motionPreference.addEventListener('change', updateManualMotion);
 updateManualMotion();
+
+const forestAudio = document.getElementById('forest-audio');
+const soundToggle = document.querySelector('.sound-toggle');
+let soundEnabled = true;
+
+function playForestAudio() {
+  if (!soundEnabled) return;
+  const playback = forestAudio.play();
+  if (playback) playback.catch(() => {});
+}
+
+soundToggle.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  soundToggle.setAttribute('aria-pressed', String(soundEnabled));
+  soundToggle.setAttribute('aria-label', soundEnabled ? 'Desativar áudio ambiente' : 'Ativar áudio ambiente');
+  if (soundEnabled) playForestAudio();
+  else forestAudio.pause();
+});
+
+// Browsers can defer audible autoplay until a gesture on the page.
+document.addEventListener('pointerdown', (event) => {
+  if (!event.target.closest('.sound-toggle')) playForestAudio();
+}, { passive: true });
+document.addEventListener('keydown', (event) => {
+  if (event.target.closest('.sound-toggle') && (event.key === 'Enter' || event.key === ' ')) return;
+  playForestAudio();
+});
+playForestAudio();
