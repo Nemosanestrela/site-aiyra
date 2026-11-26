@@ -1,3 +1,11 @@
+@font-face {
+  font-family: Bahiana;
+  src: url('assets/fonts/bahiana.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
   font-family: Inter, system-ui, sans-serif;
@@ -130,8 +138,9 @@ body {
 .content {
   position: relative;
   display: grid;
-  place-items: end center;
-  aspect-ratio: 1080 / 988;
+  justify-items: center;
+  row-gap: 3rem;
+  padding-block: 1.75rem 0;
 }
 
 .content::before {
@@ -142,6 +151,208 @@ body {
   background: inherit;
   content: '';
   pointer-events: none;
+}
+
+.planting-manual {
+  width: 87%;
+  max-width: 40rem;
+  font-family: Bahiana, 'Arial Narrow', sans-serif;
+  font-size: clamp(1.5rem, 5.9vw, 1.8rem);
+  font-weight: 400;
+  line-height: 1.23;
+}
+
+.planting-manual h2,
+.planting-manual h3,
+.planting-manual h4,
+.planting-manual p {
+  margin: 0;
+  font-weight: 400;
+}
+
+.planting-manual strong {
+  font-weight: 400;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.13em;
+}
+
+.manual-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding-block: 0.5rem 2rem;
+}
+
+.manual-heading h2 {
+  font-size: clamp(3.75rem, 15vw, 5.5rem);
+  line-height: 0.93;
+}
+
+.manual-heading img {
+  display: block;
+  width: 28%;
+  height: auto;
+  transform: rotate(5deg);
+}
+
+.planting-manual h3 {
+  font-size: clamp(2.75rem, 11vw, 3.75rem);
+  line-height: 1;
+}
+
+.planting-manual h4 {
+  font-size: 1.2em;
+  line-height: 1.1;
+}
+
+.manual-materials {
+  margin-top: 1.35rem;
+  padding-block: 1.1rem;
+  border-block: 1px solid #193d2466;
+}
+
+.manual-materials ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 1.15rem;
+  padding: 0;
+  margin: 0.65rem 0 0;
+  list-style: none;
+}
+
+.manual-materials li::before {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin: 0 0.3rem 0.15rem 0;
+  border-radius: 50%;
+  background: currentColor;
+  content: '';
+}
+
+.manual-preparation {
+  padding-top: 1.75rem;
+}
+
+.manual-preparation p {
+  margin-top: 0.65rem;
+}
+
+.germination-flow {
+  padding: 0;
+  margin: 2.5rem 0 3rem;
+  list-style: none;
+}
+
+.germination-flow li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 25% 1fr;
+  align-items: center;
+  gap: 1.15rem;
+  min-height: 5.5rem;
+  padding-block: 0.75rem;
+}
+
+.germination-flow li + li {
+  margin-top: 2.5rem;
+}
+
+.germination-flow li:not(:last-child)::after {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 12.5%;
+  width: 75%;
+  height: 2rem;
+  border-left: 1px dashed #244d2a99;
+  border-bottom: 1px dashed #244d2a99;
+  border-bottom-left-radius: 1rem;
+  content: '';
+}
+
+.germination-flow li:nth-child(even) {
+  grid-template-columns: 1fr 25%;
+}
+
+.germination-flow li:nth-child(even) img {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.germination-flow li:nth-child(even)::after {
+  border-left: 0;
+  border-right: 1px dashed #244d2a99;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 1rem;
+}
+
+.germination-flow img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 7rem;
+  object-fit: contain;
+}
+
+.after-germination h3 {
+  padding-top: 1rem;
+  border-top: 1px solid #193d2466;
+}
+
+.planting-flow {
+  padding: 0;
+  margin: 2.5rem 0 0;
+  list-style: none;
+}
+
+.planting-flow li {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 25%;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.3rem 0 2.75rem 2.35rem;
+}
+
+.planting-flow li:not(:last-child)::before {
+  position: absolute;
+  top: 2rem;
+  bottom: -0.1rem;
+  left: 0.8rem;
+  border-left: 1px dashed #244d2a99;
+  content: '';
+}
+
+.step-number {
+  position: absolute;
+  top: 0.25rem;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  aspect-ratio: 1;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.step-text p {
+  margin-top: 0.65rem;
+}
+
+.planting-flow img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 7.5rem;
+  object-fit: contain;
+}
+
+.planting-flow .sprout-illustration {
+  max-height: 6.5rem;
 }
 
 .video-player {
