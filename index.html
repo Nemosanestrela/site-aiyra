@@ -24,8 +24,8 @@
       }, 20000);
     }
   </script>
-  <link rel="stylesheet" href="style.css?v=24">
-  <script src="animation.js?v=18" defer></script>
+  <link rel="stylesheet" href="style.css?v=26">
+  <script src="animation.js?v=20" defer></script>
 </head>
 <body>
   <div class="loading-screen" aria-hidden="true">
@@ -35,9 +35,6 @@
     <span class="floating-light-path"><span class="light-halo"></span></span>
   </div>
   <div class="page">
-    <div class="book-order-track">
-      <a class="book-order" href="https://api.whatsapp.com/send/?phone=5514998147500" target="_blank" rel="noopener noreferrer" aria-hidden="true" inert><span>FAÇA SUA <strong>ENCOMENDA DO LIVRO</strong></span></a>
-    </div>
     <audio id="forest-audio" src="assets/audio/forest-ambience.mp3" loop preload="metadata"></audio>
     <div class="sound-control">
       <p class="sound-hint" id="sound-hint" role="status" aria-hidden="true">TOQUE PARA HABILITAR O ÁUDIO</p>
@@ -193,6 +190,11 @@
           </button>
           <p class="video-note" role="status" hidden></p>
           </div>
+        </section>
+
+        <section class="book-purchase" aria-label="Encomende o livro Aiyra e a Mãe da Floresta">
+          <img class="book-purchase-image" src="assets/livro.png" alt="Livro Aiyra e a Mãe da Floresta, com um pássaro sobre a capa." width="1080" height="1349" loading="lazy" decoding="async" data-reveal>
+          <a class="book-order" href="https://api.whatsapp.com/send/?phone=5514998147500" target="_blank" rel="noopener noreferrer">FAÇA SUA ENCOMENDA DO LIVRO</a>
         </section>
       </div>
     </main>
