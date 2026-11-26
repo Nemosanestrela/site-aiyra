@@ -489,3 +489,31 @@ const soundObserver = new MutationObserver(syncSoundControl);
 soundObserver.observe(root, { attributes: true, attributeFilter: ['class'] });
 motionPreference.addEventListener('change', syncSoundControl);
 syncSoundControl();
+
+const bookOrder = document.querySelector('.book-order');
+const orderPlant = document.querySelector('.creation-plant');
+let orderFrame;
+
+function updateBookOrder() {
+  orderFrame = undefined;
+  // Use layout coordinates so the plant's floating animation cannot retrigger the button.
+  const parent = orderPlant.offsetParent;
+  const plantBottom = parent.getBoundingClientRect().top + parent.clientTop + orderPlant.offsetTop + orderPlant.offsetHeight;
+  const lastScrollPosition = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  const entryPosition = Math.min(window.scrollY + plantBottom, lastScrollPosition);
+  const visible = window.scrollY >= entryPosition - 1;
+  root.classList.toggle('has-book-order', visible);
+  bookOrder.classList.toggle('is-visible', visible);
+  bookOrder.inert = !visible;
+  bookOrder.setAttribute('aria-hidden', String(!visible));
+}
+
+function scheduleBookOrder() {
+  if (orderFrame === undefined) orderFrame = requestAnimationFrame(updateBookOrder);
+}
+
+window.addEventListener('scroll', scheduleBookOrder, { passive: true });
+window.addEventListener('resize', scheduleBookOrder);
+window.addEventListener('pageshow', scheduleBookOrder);
+document.fonts.ready.then(scheduleBookOrder);
+updateBookOrder();
