@@ -21,6 +21,13 @@
   --scroll-distance: 145vh;
 }
 
+/* Bahiana ships as Regular; suppress synthesized bold only in Safari. */
+.is-safari .planting-manual,
+.is-safari .creation,
+.is-safari .book-order {
+  font-synthesis: none;
+}
+
 @supports (height: 100lvh) {
   :root {
     /* Keep the artwork still while the phone browser's toolbar slides. */
