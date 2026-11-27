@@ -38,7 +38,11 @@
 .is-safari .planting-manual :is(h2, h3, h4, p, li, span, strong, text, textPath),
 .is-safari .creation :is(h2, p),
 .is-safari .book-order {
-  -webkit-text-stroke: 0.01632em currentColor;
+  -webkit-text-stroke: 0.0164832em currentColor;
+}
+
+.is-safari .manual-title-curve :is(text, textPath) {
+  -webkit-text-stroke: 0.016728em currentColor;
 }
 
 @supports (height: 100lvh) {
