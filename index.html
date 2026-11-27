@@ -6,6 +6,7 @@
   <meta name="description" content="Aiyra e a Mãe da Floresta. Um manual ilustrado para acompanhar suas sementes, da germinação às primeiras folhas.">
   <meta name="theme-color" content="#10251a">
   <title>Aiyra e a Mãe da Floresta</title>
+  <link rel="preload" href="assets/fonts/bahiana.woff2" as="font" type="font/woff2" crossorigin>
   <script>
     history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
@@ -24,7 +25,7 @@
       }, 20000);
     }
   </script>
-  <link rel="stylesheet" href="style.css?v=26">
+  <link rel="stylesheet" href="style.css?v=33">
   <script src="animation.js?v=20" defer></script>
 </head>
 <body>
@@ -74,7 +75,8 @@
               <span class="visually-hidden">Manual de plantio</span>
               <svg class="manual-title-curve" viewBox="0 0 528 150" aria-hidden="true" focusable="false">
                 <defs><path id="manual-title-path" d="M 78 70 Q 264 175 450 70"></path></defs>
-                <text><textPath href="#manual-title-path" startOffset="50%" text-anchor="middle" textLength="345" lengthAdjust="spacingAndGlyphs">Manual de plantio</textPath></text>
+                <!-- Center the 345-unit title on the 390.907-unit curve without text-anchor/textLength differences between engines. -->
+                <text><textPath href="#manual-title-path" startOffset="22.9535" text-anchor="start" textLength="345" lengthAdjust="spacingAndGlyphs">Manual de plantio</textPath></text>
               </svg>
             </h2>
           </header>
@@ -182,6 +184,7 @@
         </section>
 
         <section class="creation" aria-labelledby="creation-title">
+          <img class="creation-edge creation-edge-top" src="assets/manual/video-bg-top.png" alt="" width="1080" height="765" loading="lazy" decoding="async" aria-hidden="true">
           <h2 id="creation-title" data-reveal>Processo de<br>criação do livro</h2>
           <div class="video-player">
           <button class="video-play" type="button" data-youtube-id="MSw1YHrfxE4" aria-label="Reproduzir Processo de criação do livro">
@@ -190,10 +193,12 @@
           </button>
           <p class="video-note" role="status" hidden></p>
           </div>
+          <p class="creation-copy" data-reveal>Cada página guarda um gesto, cada costura carrega uma intenção. Um conto sobre a coragem de ser quem somos e a descoberta de nossas verdadeiras raízes.</p>
         </section>
 
         <section class="book-purchase" aria-label="Encomende o livro Aiyra e a Mãe da Floresta">
-          <img class="book-purchase-image" src="assets/livro.png" alt="Livro Aiyra e a Mãe da Floresta, com um pássaro sobre a capa." width="1080" height="1349" loading="lazy" decoding="async" data-reveal>
+          <img class="creation-edge creation-edge-bottom" src="assets/manual/video-bg-bottom.png" alt="" width="1080" height="633" loading="lazy" decoding="async" aria-hidden="true">
+          <img class="book-purchase-image" src="assets/livro.png?v=2" alt="Livro Aiyra e a Mãe da Floresta, com um pássaro sobre a capa." width="1080" height="1349" loading="lazy" decoding="async" data-reveal>
           <a class="book-order" href="https://api.whatsapp.com/send/?phone=5514998147500" target="_blank" rel="noopener noreferrer">FAÇA SUA ENCOMENDA DO LIVRO</a>
         </section>
       </div>
