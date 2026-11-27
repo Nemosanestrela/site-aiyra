@@ -34,6 +34,13 @@
   font-synthesis: none;
 }
 
+/* A small outline gives Regular an intermediate weight without synthetic bold. */
+.is-safari .planting-manual :is(h2, h3, h4, p, li, span, strong, text, textPath),
+.is-safari .creation :is(h2, p),
+.is-safari .book-order {
+  -webkit-text-stroke: 0.008em currentColor;
+}
+
 @supports (height: 100lvh) {
   :root {
     /* Keep the artwork still while the phone browser's toolbar slides. */
@@ -649,6 +656,7 @@ body {
 
 .footer-rights {
   margin: 0;
+  translate: 0 20%;
   color: #22531c;
   font-size: clamp(8px, calc(12 * var(--u)), 10px);
   line-height: 1.4;
