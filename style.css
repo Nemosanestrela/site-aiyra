@@ -655,8 +655,11 @@ body {
 }
 
 .footer-rights {
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(64 * var(--u));
+  z-index: 2;
   margin: 0;
-  translate: 0 50%;
   color: #22531c;
   font-size: clamp(8px, calc(12 * var(--u)), 10px);
   line-height: 1.4;
