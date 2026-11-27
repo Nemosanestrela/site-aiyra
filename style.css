@@ -15,6 +15,8 @@
   background-color: #10251a;
   --content-rgb: 209 255 121;
   --content-color: rgb(var(--content-rgb));
+  --paper-grain: url('assets/paper-speckle.svg');
+  --dark-grain: url('assets/dark-speckle.svg');
   --dot-size: 2px;
   --dot-spacing: 7px;
   --scene-height: 100vh;
@@ -67,6 +69,7 @@ body {
 .page {
   --layout-width: 100vw;
   --u: calc(var(--layout-width) / 528);
+  --grain-size: calc(512 * var(--u));
   margin-inline: auto;
 }
 
@@ -521,7 +524,15 @@ body {
 }
 
 .creation-edge-top {
+  --edge-mask: url('assets/manual/video-bg-top.png');
   top: 0;
+  aspect-ratio: 1080 / 765;
+}
+
+.creation-edge > img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .creation-plant {
@@ -707,7 +718,9 @@ body {
 }
 
 .creation-edge-bottom {
+  --edge-mask: url('assets/manual/video-bg-bottom.png');
   top: var(--book-edge-start);
+  aspect-ratio: 1080 / 633;
   /* BG2 carries its dark backing; the lime below follows its actual height. */
   background: #22531c;
 }
@@ -755,6 +768,59 @@ body {
 .book-order:focus-visible {
   outline: 2px solid #ff8c04;
   outline-offset: 4px;
+}
+
+/* Speckles stay on painted backgrounds, underneath text and illustrations. */
+.content,
+.creation-plant,
+.planting-steps > .step-number,
+.book-purchase {
+  background-image: var(--paper-grain);
+  background-size: var(--grain-size);
+}
+
+.creation,
+.book-purchase::before,
+.creation-edge-bottom {
+  background-image: var(--dark-grain);
+  background-size: var(--grain-size);
+}
+
+.scene::before {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: var(--paper-grain);
+  background-size: var(--grain-size);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 70%, #000 99%);
+  mask-image: linear-gradient(to bottom, transparent 70%, #000 99%);
+  content: '';
+  pointer-events: none;
+}
+
+.creation-edge::after {
+  position: absolute;
+  inset: 0;
+  background-image: var(--paper-grain);
+  background-size: var(--grain-size);
+  -webkit-mask: var(--edge-mask) center / 100% 100% no-repeat;
+  mask: var(--edge-mask) center / 100% 100% no-repeat;
+  content: '';
+  pointer-events: none;
+}
+
+.footer {
+  isolation: isolate;
+}
+
+.footer::before {
+  position: absolute;
+  inset: var(--footer-overlap) 0 0;
+  z-index: -1;
+  background-image: var(--paper-grain);
+  background-size: var(--grain-size);
+  content: '';
+  pointer-events: none;
 }
 
 .sound-control {
@@ -903,22 +969,19 @@ body {
   }
 
   .has-manual-motion .manual-heading h2[data-reveal] {
-    rotate: -25deg;
-    scale: 0.9;
+    translate: 0 -20px;
+    scale: 0.86;
     transform-origin: 50% 20%;
-    transition: opacity 720ms ease-out, translate 850ms cubic-bezier(0.2, 0.6, 0.3, 1),
-      rotate 1100ms cubic-bezier(0.22, 0.8, 0.32, 1), scale 1100ms cubic-bezier(0.22, 0.8, 0.32, 1);
-    transition-delay: 180ms;
-  }
-
-  .has-manual-motion .manual-heading {
-    overflow-x: clip;
+    transition: opacity 850ms ease-out,
+      translate 1100ms cubic-bezier(0.22, 0.72, 0.25, 1),
+      scale 1200ms cubic-bezier(0.22, 0.72, 0.25, 1);
   }
 
   .has-manual-motion .manual-heading h2[data-reveal].is-revealed {
-    rotate: 0deg;
+    translate: 0 0;
     scale: 1;
   }
+
 }
 
 @keyframes manual-float {
