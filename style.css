@@ -23,8 +23,14 @@
 
 /* Bahiana ships as Regular; suppress synthesized bold only in Safari. */
 .is-safari .planting-manual,
+.is-safari .planting-manual h2,
+.is-safari .planting-manual h3,
+.is-safari .planting-manual h4,
+.is-safari .planting-manual p,
 .is-safari .creation,
+.is-safari .creation h2,
 .is-safari .book-order {
+  font-weight: 400;
   font-synthesis: none;
 }
 
@@ -548,7 +554,7 @@ body {
   border: 1px solid transparent;
   border-radius: clamp(6px, 1.5vw, 14px);
   background: linear-gradient(#10251a, #10251a) padding-box,
-    linear-gradient(135deg, #15391f, #d1ff79) border-box;
+    linear-gradient(135deg, #15391f, #b6de69) border-box;
   box-shadow: 0 8px 12px #10251a40, 0 18px 36px #2338134d;
 }
 
@@ -615,12 +621,14 @@ body {
 .footer {
   --footer-overlap: calc(152.5 * var(--u));
   position: relative;
+  overflow: clip;
   margin-top: calc(-1 * var(--footer-overlap));
   background: linear-gradient(to bottom, transparent calc(var(--footer-overlap) - 2px), var(--content-color) calc(var(--footer-overlap) - 2px));
 }
 
 .footer-logo {
   translate: 0 -30%;
+  scale: 1.12;
 }
 
 .footer-art {
@@ -656,8 +664,8 @@ body {
 }
 
 .footer-instagram svg {
-  width: 22px;
-  height: 22px;
+  width: 25px;
+  height: 25px;
 }
 
 .footer-instagram:focus-visible {
